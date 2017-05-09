@@ -1,4 +1,4 @@
-module Handler.ProfileSpec (spec) where
+module Handler.PageSpec (spec) where
 
 import TestImport
 

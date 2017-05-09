@@ -13,7 +13,7 @@ import Text.Julius (RawJS (..))
 -- inclined, or create a single monolithic file.
 getPageR :: Handler Html
 getPageR = do
-    let handlerName = "getHomeR" :: Text    
+    let handlerName = "getPageR" :: Text    
     defaultLayout $ do
         aDomId <- newIdent
         setTitle "Page 1"
