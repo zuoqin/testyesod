@@ -10,6 +10,6 @@
                 <div .panel-body>
                     <span .teaser-text>
                         <p>
-                            The mainstream media dares not to share this with you, because it 
+                            @{stories} The mainstream media dares not to share this with you, because it 
     <hr>
 

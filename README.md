@@ -1,3 +1,8 @@
+# Build & run
+1. stack build
+2. stack exec -- yesod devel
+3. http://localhost:3000/
+
 # Adding new route
 1. Copy templates\storiespage.hamlet and templates\storiespage.lucius
 2. Copy Handler\Page
