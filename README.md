@@ -1,4 +1,7 @@
 # Build & run
+0. stack build yesod-bin cabal-install --install-ghc
+
+
 1. stack build
 2. stack exec -- yesod devel
 3. http://localhost:3000/

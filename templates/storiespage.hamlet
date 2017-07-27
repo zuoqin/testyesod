@@ -4,12 +4,16 @@
     <div .col-md-12>
         <div .row>
             <div .panel .panel-primary>
-                <div .panel-heading>
-                    <h3 .panel-title>
-                        <a href="http://www.zerohedge.com/news/2017-05-08/tour-down-homicide-lane-baltimore-descends-chaos">A Tour Down Homicide Lane, As Baltimore Descends Into Chaos</a>
-                <div .panel-body>
-                    <span .teaser-text>
-                        <p>
-                            @{stories} The mainstream media dares not to share this with you, because it 
+            $if null stories
+                <p>Sorry, I lied, you don't have any stories
+            $else
+                $forall Story introduction contents <- stories
+                    <div .panel-heading>
+                        <h3 .panel-title>
+                            <a href="http://www.zerohedge.com/news/2017-05-08/tour-down-homicide-lane-baltimore-descends-chaos">#{introduction}</a>
+                    <div .panel-body>
+                        <span .teaser-text>
+                            <p>
+                                #{contents}
     <hr>
 

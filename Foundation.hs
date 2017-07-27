@@ -97,6 +97,21 @@ instance Yesod App where
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Page 1"
+                    , menuItemRoute = PageR
+                    , menuItemAccessCallback = True
+                    }
+                , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Page 2"
+                    , menuItemRoute = PageR
+                    , menuItemAccessCallback = True
+                    }
+                                    , NavbarLeft $ MenuItem
+                    { menuItemLabel = "Page 3"
+                    , menuItemRoute = PageR
+                    , menuItemAccessCallback = True
+                    }                    
+                , NavbarLeft $ MenuItem
                     { menuItemLabel = "Profile"
                     , menuItemRoute = ProfileR
                     , menuItemAccessCallback = isJust muser
@@ -127,6 +142,12 @@ instance Yesod App where
 
         pc <- widgetToPageContent $ do
             addStylesheet $ StaticR css_bootstrap_css
+
+
+            addScript $ StaticR js_jquery_min_js
+            addScript $ StaticR js_tether_min_js
+            addScript $ StaticR js_bootstrap_min_js
+
             $(widgetFile "default-layout")
         withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 

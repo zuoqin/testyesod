@@ -25,7 +25,7 @@ getHomeR = do
     defaultLayout $ do
         let (commentFormId, commentTextareaId, commentListId) = commentIds
         aDomId <- newIdent
-        setTitle "Welcome To Yesod!"
+        setTitle "Welcome To Zero Hedge"
         $(widgetFile "homepage")
 
 postHomeR :: Handler Html

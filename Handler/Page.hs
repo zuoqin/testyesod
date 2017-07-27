@@ -8,6 +8,14 @@ import Network.HTTP
 import Data.Text (pack, concat, unpack)
 import Data.List (foldl)
 import qualified Data.ByteString.Char8 as L8
+
+
+data Story = Story
+    { introduction :: String
+    , contents     :: String
+    }
+
+type Stories = [Story]
 --import Prelude
 
 -- This is a handler function for the GET request method on the HomeR
@@ -19,7 +27,7 @@ import qualified Data.ByteString.Char8 as L8
 -- inclined, or create a single monolithic file.
 
 doStuffWithNormalString :: IO String
-doStuffWithNormalString = simpleHTTP (Network.HTTP.getRequest "http://www.zerohedge.com/?page=1") >>= fmap (take 10000) . getResponseBody
+doStuffWithNormalString = simpleHTTP (Network.HTTP.getRequest "http://www.zerohedge.com/?page=1") >>= fmap (take 100000) . getResponseBody
 
 
 --getzhpage :: IO String
@@ -31,6 +39,9 @@ doStuffWithNormalString = simpleHTTP (Network.HTTP.getRequest "http://www.zerohe
 
 getPageR :: Handler Html
 getPageR = do
+    aDomId <- newIdent
+
+    let stories = [(Story "khkhh" "yiuyiuyiu")]
     --datas <- liftIO getzhpage
     --let stories = (doStuffWithNormalString datas) :: Text
 
@@ -62,12 +73,14 @@ getPageR = do
             $logInfo "Reading of data file succeeded"
             let ls = Import.lines (Data.Text.pack str)
             when (Import.length ls < 50) $ $logWarn "Less than 5 lines of data"
-            defaultLayout
-                [whamlet|
-                    <ol>
-                        $forall l <- ls
-                            <li>#{l}
-                |]
+
+            
+            defaultLayout $(widgetFile "storiespage")
+            --    [whamlet|
+            --        <ol>
+            --            $forall l <- ls
+            --                <li>#{l}
+            --    |]
 
     --let ls = Import.lines (Data.Text.unpack (Data.Text.concat edata))
     --when (Import.length ls < 5) $ $logWarn "Less than 5 lines of data"
