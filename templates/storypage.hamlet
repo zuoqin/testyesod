@@ -1,0 +1,13 @@
+<div .container>
+    <!-- Starting
+        ================================================== -->
+    <div .col-md-12>
+        <div .row>
+            <div .panel .panel-primary>
+                <div .panel-heading>
+                    <h3 .panel-title>
+                        #{preEscapedToMarkup title}
+                <div .panel-body>
+                        #{preEscapedToMarkup contents}
+    <hr>
+

@@ -10,7 +10,7 @@ import Data.List (foldl, findIndices)
 
 import Data.List.Split as Split
 import qualified Data.ByteString.Char8 as L8
-
+import Data.ByteString.Base64
 
 data Story = Story
     { reference    :: String
@@ -29,9 +29,9 @@ type Stories = [Story]
 -- functions. You can spread them across multiple files if you are so
 -- inclined, or create a single monolithic file.
 
-doStuffWithNormalString :: IO String
-doStuffWithNormalString = do
-    let pagestories = simpleHTTP (Network.HTTP.getRequest "http://www.zerohedge.com/?page=1") >>= fmap (take 100000) . getResponseBody
+doStuffWithNormalString :: Integer -> IO String
+doStuffWithNormalString pageId = do
+    let pagestories = simpleHTTP (Network.HTTP.getRequest ("http://www.zerohedge.com/?page=" ++ (show pageId)) ) >>= fmap (take 100000) . getResponseBody
     pagestories
 --getzhpage :: IO String
 --getzhpage = do
@@ -57,12 +57,13 @@ buildStories pagehtml stories = do
 
     let ind3 = indexAt 0 (findIndices (`elem` ['>']) (drop ind2 (L8.unpack bstr)))
 
-    let reference = take (ind3 -7) (drop (ind2 + 7) bstr)
+    let reference = take (ind3 - 9) (drop (ind2 + 8) bstr)
+    let base64ref = "/story/" ++ (encode reference)
 
 
     let ind1 = (length (fst (L8.breakSubstring (L8.pack "teaser-text") (drop (ind3 + ind2) bstr)))) + ind3 + ind2
     let ind2 = length (fst (L8.breakSubstring (L8.pack "</span>") (drop ind1 bstr)))
-    let introduction = take ind2 (drop (ind1 + 15) bstr)
+    let introduction = take (ind2 + 35) (drop (ind1 - 14) pagehtml)
 
 
     let theStory = indexAt 1 (Split.splitOn "<h2 class=\"title teaser-title\">" pagehtml)
@@ -72,15 +73,15 @@ buildStories pagehtml stories = do
 
     let theTitle = take pos2 (drop (pos1 + 31) theStory)
 
-    let newstories = stories ++ [(Story (L8.unpack reference) theTitle (L8.unpack introduction))]
+    let newstories = stories ++ [(Story (L8.unpack base64ref) theTitle introduction)]
 
-    let newhtml = drop (ind1 + 100) pagehtml
+    let newhtml = drop (ind1 + 50) pagehtml
     let cnt = length newstories
     if (cnt > 10) then newstories else buildStories newhtml newstories
 
 
-getPageR :: Handler Html
-getPageR = do
+getPageR :: Integer -> Handler Html
+getPageR pageId = do
     aDomId <- newIdent
 
     --let stories = [(Story "khkhh" "yiuyiuyiu")]
@@ -104,7 +105,7 @@ getPageR = do
 --theResponse <- liftIO $ try $ responseBody . httpLbs "http://www.zerohedge.com/?page=1"
 
     --let edata = liftIO $ try $ doStuffWithNormalString
-    edata <- liftIO $ try $ doStuffWithNormalString
+    edata <- liftIO $ try $ (doStuffWithNormalString pageId)
     -- let edata = map (\x -> Data.Text.pack x) edata1
     -- edata <- liftIO $ try $ readFile "E:/DEV/Haskell/testyesod/README.md"
     case edata :: Either IOException String of

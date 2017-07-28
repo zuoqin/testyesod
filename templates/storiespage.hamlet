@@ -13,7 +13,6 @@
                             <a href="#{reference}">
                                 #{preEscapedToMarkup introduction}
                     <div .panel-body>
-                        <div>
                             #{preEscapedToMarkup contents}                    
     <hr>
 

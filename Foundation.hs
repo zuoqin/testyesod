@@ -86,6 +86,10 @@ instance Yesod App where
         muser <- maybeAuthPair
         mcurrentRoute <- getCurrentRoute
 
+        -- strRoute <- getUrlRender
+        -- let renderedUrl = strRoute $ PageR 1
+        -- $logDebug  renderedUrl
+
         -- Get the breadcrumbs, as defined in the YesodBreadcrumbs instance.
         (title, parents) <- breadcrumbs
 
@@ -98,17 +102,17 @@ instance Yesod App where
                     }
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Page 1"
-                    , menuItemRoute = PageR
+                    , menuItemRoute = PageR 1
                     , menuItemAccessCallback = True
                     }
                 , NavbarLeft $ MenuItem
                     { menuItemLabel = "Page 2"
-                    , menuItemRoute = PageR
+                    , menuItemRoute = PageR 2
                     , menuItemAccessCallback = True
                     }
                                     , NavbarLeft $ MenuItem
                     { menuItemLabel = "Page 3"
-                    , menuItemRoute = PageR
+                    , menuItemRoute = PageR 3
                     , menuItemAccessCallback = True
                     }                    
                 , NavbarLeft $ MenuItem
@@ -162,9 +166,10 @@ instance Yesod App where
     isAuthorized RobotsR _ = return Authorized
     isAuthorized (StaticR _) _ = return Authorized
 
-    isAuthorized PageR _ = return Authorized
-
     isAuthorized ProfileR _ = isAuthenticated
+
+    -- anyone can access other pages
+    isAuthorized _ _ = return Authorized    
 
     -- This function creates static content files in the static folder
     -- and names them based on a hash of their content. This allows
@@ -204,7 +209,8 @@ instance YesodBreadcrumbs App where
   breadcrumb (AuthR _) = return ("Login", Just HomeR)
   breadcrumb ProfileR = return ("Profile", Just HomeR)
   breadcrumb  _ = return ("home", Nothing)
-  breadcrumb PageR = return ("Stories Page", Nothing)  
+  --breadcrumb (PageR _) = return ("Stories Page", Nothing)  
+  --breadcrumb (StoryR _)= return ("Story Page", Nothing)  
 
 -- How to run database actions.
 instance YesodPersist App where

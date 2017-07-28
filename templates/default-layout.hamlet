@@ -22,18 +22,23 @@
 
 <!-- Page Contents -->
 
+<!--
 <div .container>
-    $if not $ Just PageR == mcurrentRoute
-        $if not $ Just HomeR == mcurrentRoute
-            <ul .breadcrumb>
-                $forall bc <- parents
-                    <li>
-                        <a href="@{fst bc}">#{snd bc}
+    $if not $ Just StoryR == mcurrentRoute
+        $if not $ Just PageR == mcurrentRoute
 
-                <li .active>#{title}
+            $if not $ Just HomeR == mcurrentRoute
+                <ul .breadcrumb>
+                    $forall bc <- parents
+                        <li>
+                            <a href="@{fst bc}">#{snd bc}
+
+                    <li .active>#{title}
 
     $maybe msg <- mmsg
       <div .alert.alert-info #message>#{msg}
+-->
+
 
 ^{widget}
 

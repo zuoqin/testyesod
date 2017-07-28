@@ -10,4 +10,6 @@
 
 /profile ProfileR GET
 
-/page PageR GET
+/page/#Integer PageR GET
+
+/story/#String StoryR GET

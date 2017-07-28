@@ -25,6 +25,7 @@ library
                      Handler.Comment
                      Handler.Profile
                      Handler.Page
+                     Handler.Story
 
     if flag(dev) || flag(library-only)
         cpp-options:   -DDEVELOPMENT
@@ -97,6 +98,7 @@ library
                  , wai
                  , http-client
                  , split
+                 , base64-bytestring
 
 executable         testyesod
     if flag(library-only)
