@@ -96,6 +96,7 @@ library
                  , case-insensitive
                  , wai
                  , http-client
+                 , split
 
 executable         testyesod
     if flag(library-only)

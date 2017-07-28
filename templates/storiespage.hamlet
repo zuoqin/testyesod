@@ -7,13 +7,13 @@
             $if null stories
                 <p>Sorry, I lied, you don't have any stories
             $else
-                $forall Story introduction contents <- stories
+                $forall Story reference introduction contents <- stories
                     <div .panel-heading>
                         <h3 .panel-title>
-                            <a href="http://www.zerohedge.com/news/2017-05-08/tour-down-homicide-lane-baltimore-descends-chaos">#{introduction}</a>
+                            <a href="#{reference}">
+                                #{preEscapedToMarkup introduction}
                     <div .panel-body>
-                        <span .teaser-text>
-                            <p>
-                                #{contents}
+                        <div>
+                            #{preEscapedToMarkup contents}                    
     <hr>
 

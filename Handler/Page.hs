@@ -6,12 +6,15 @@ import Text.Julius (RawJS (..))
 import Network.HTTP
 
 import Data.Text (pack, concat, unpack)
-import Data.List (foldl)
+import Data.List (foldl, findIndices)
+
+import Data.List.Split as Split
 import qualified Data.ByteString.Char8 as L8
 
 
 data Story = Story
-    { introduction :: String
+    { reference    :: String
+    , introduction :: String
     , contents     :: String
     }
 
@@ -27,21 +30,60 @@ type Stories = [Story]
 -- inclined, or create a single monolithic file.
 
 doStuffWithNormalString :: IO String
-doStuffWithNormalString = simpleHTTP (Network.HTTP.getRequest "http://www.zerohedge.com/?page=1") >>= fmap (take 100000) . getResponseBody
-
-
+doStuffWithNormalString = do
+    let pagestories = simpleHTTP (Network.HTTP.getRequest "http://www.zerohedge.com/?page=1") >>= fmap (take 100000) . getResponseBody
+    pagestories
 --getzhpage :: IO String
 --getzhpage = do
 --    rsp <- Network.HTTP.simpleHTTP (Network.HTTP.getRequest "http://www.zerohedge.com/?page=1")
           -- fetch document and return it (as a 'String'.)
 --    fmap (Data.List.take 100) (getResponseBody rsp)
     --res
+indexAt :: Int -> [a] -> a
+-- indexAt _ [] = error "Empty List!"
+indexAt y (x:xs)  | y <= 0 = x
+                 | otherwise = indexAt (y-1) xs
+
+
+buildStories :: String -> [Story] -> [Story]
+buildStories pagehtml stories = do
+    --let sections = Split.splitOn "views-row views-row-1 views-row-odd views-row-first" pagehtml
+
+    --let storieshtml = indexAt 2 sections
+    let bstr = L8.pack pagehtml
+    let ind1 = length (fst (L8.breakSubstring (L8.pack "<h2 class=\"title teaser-title\">") bstr))
+
+    let ind2 = (length (fst (L8.breakSubstring (L8.pack "a href=\"") (drop (ind1 + 10) bstr)))) + ind1 + 10
+
+    let ind3 = indexAt 0 (findIndices (`elem` ['>']) (drop ind2 (L8.unpack bstr)))
+
+    let reference = take (ind3 -7) (drop (ind2 + 7) bstr)
+
+
+    let ind1 = (length (fst (L8.breakSubstring (L8.pack "teaser-text") (drop (ind3 + ind2) bstr)))) + ind3 + ind2
+    let ind2 = length (fst (L8.breakSubstring (L8.pack "</span>") (drop ind1 bstr)))
+    let introduction = take ind2 (drop (ind1 + 15) bstr)
+
+
+    let theStory = indexAt 1 (Split.splitOn "<h2 class=\"title teaser-title\">" pagehtml)
+
+    let pos1 = indexAt 0 (findIndices (`elem` ['>']) (drop 30 theStory))
+    let pos2 = indexAt 0 (findIndices (`elem` ['<']) (drop (pos1 + 31) theStory))
+
+    let theTitle = take pos2 (drop (pos1 + 31) theStory)
+
+    let newstories = stories ++ [(Story (L8.unpack reference) theTitle (L8.unpack introduction))]
+
+    let newhtml = drop (ind1 + 100) pagehtml
+    let cnt = length newstories
+    if (cnt > 10) then newstories else buildStories newhtml newstories
+
 
 getPageR :: Handler Html
 getPageR = do
     aDomId <- newIdent
 
-    let stories = [(Story "khkhh" "yiuyiuyiu")]
+    --let stories = [(Story "khkhh" "yiuyiuyiu")]
     --datas <- liftIO getzhpage
     --let stories = (doStuffWithNormalString datas) :: Text
 
@@ -71,6 +113,23 @@ getPageR = do
             defaultLayout [whamlet|An error occurred|]
         Right str -> do
             $logInfo "Reading of data file succeeded"
+
+
+            let sections = Split.splitOn "views-row views-row-1 views-row-odd views-row-first" str
+
+            let storieshtml = indexAt 2 sections
+
+            --let theStory = indexAt 1 (Split.splitOn "<h2 class=\"title teaser-title\">" stories)
+
+            --let pos1 = indexAt 0 (findIndices (`elem` ['>']) (drop 30 theStory))
+            --let pos2 = indexAt 0 (findIndices (`elem` ['<']) (drop (pos1 + 31) theStory))
+
+            --let theTitle = take pos2 (drop (pos1 + 31) theStory)
+
+            --(Story "kjhkhkhkjh" theTitle "yiuyiuyiu")
+            let stories = buildStories storieshtml []
+            
+
             let ls = Import.lines (Data.Text.pack str)
             when (Import.length ls < 50) $ $logWarn "Less than 5 lines of data"
 
